@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>NEM中文社区 - 区块浏览器</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/nemchina_explorer.css" rel="stylesheet">
+	<link rel="shortcut icon" href="images/icon.ico" type="image/x-icon">
+</head>
+<body ng-app="content">
+<div id="header" class="container">
+    <div id="navigation" class="row top-buffer-10" ng-controller="navCtrl">
+        <div class="col-xs-12">
+        	<div class="pull-left margin-right-20"><a href="blocklist.html"><img src="images/nem.png" width="99" height="33"></a></div>
+        	<div class="pull-right form-group bottom-buffer-10">
+		        <form class="form-inline" role="form">
+		        	<input id="searchInput" type="text" style="width:300px;" class="form-control" placeholder="区块编号 / 交易哈希值 / 帐户地址">
+		  	 		<button id="search" type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search small"></span></button>
+		    	</form>
+		    </div>
+          	<div class="pull-right btn-group margin-right-20">
+                <button class="btn btn-default navi active" ng-click="go('blocklist.html')">区 块</button>
+	            <button class="btn btn-default navi" ng-click="go('txlist.html')">交 易</button>
+	            <button class="btn btn-default navi" ng-click="go('accountlist.html')">帐 户</button>
+	            <button class="btn btn-default navi" ng-click="go('nodelist.html')">节 点</button>
+	            <button class="btn btn-default navi" ng-click="go('supernodepayout.html')">超级节点奖励</button>
+	            <button class="btn btn-default navi disabled">命名空间</button>
+	            <button class="btn btn-default navi disabled">投票</button>
+            </div>
+        </div>
+    </div>
+    <div id="warning" class="alert alert-warning hidden">
+	    <a href="#" class="close" onclick="$('#warning').hide();">&times;</a>
+	    <strong>提示：  </strong><span id="warningContent"></span>
+	</div>
+</div>
+<div id="content" class="container" ng-controller="blockListCtrl" style="padding-bottom:70px;">
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>区块编号</th>
+				<th>时间</th>
+				<th>交易数</th>
+				<th>手续费</th>
+				<th>收获者</th>
+			</tr>
+		</thead>
+		<tbody class="well well-large">
+			<tr ng-repeat="block in blockList" style="cursor:pointer;" ng-click="showBlockTransactions(block.txes, $event)" data-toggle="popover" title="如区块包含交易信息，点击可查阅">
+				<td><a href="s_block.html?height={{block.height}}" target="_blank"><span ng-bind="block.height"></span></a></td>
+				<td ng-bind="block.timeStamp"></td>
+				<td ng-bind="block.txAmount"></td>
+				<td ng-bind="block.txFee"></td>
+				<td ng-bind="block.timeStamp"><a href="s_account.html?account={{block.harvester}}" target="_blank"><span ng-bind="block.harvester"></span></a></td>
+			</tr>
+		</tbody>
+	</table>
+	<ul class="pager" style="margin-top:-16px;">
+		<li class="previous" ng-class="{disabled:page<=1}" ng-click="previousPage();"><a href="javascript:void(0);">&larr; 上一页</a></li>
+		<li class="next active"><a href="javascript:void(0);" ng-click="nextPage();">下一页 &rarr;</a></li>
+	</ul>
+	<table class="table table-striped table-hover table-condensed" ng-class="{hidden:!showBlockTransactionsFlag}" style="margin-top:-16px;">
+		<thead>
+			<tr>
+				<th colspan="6" class="text-center">交易信息</th>
+			</tr>
+			<tr>
+				<td>#</td>
+				<td>时间</td>
+				<td>数量</td>
+				<td>手续费</td>
+				<td>发送方</td>
+				<td>接收方</td>
+			</tr>
+		</thead>
+		<tbody class="well well-large">
+			<tr ng-repeat="tx in txList" style="cursor:pointer;" ng-click="showTransaction(tx.height, tx.signature, tx.hash, $event)">
+				<td ng-bind="$index+1"></td>
+				<td ng-bind="tx.time"></td>
+				<td ng-bind="tx.amount"></td>
+				<td ng-bind="tx.fee"></td>
+				<td><a href="s_account.html?account={{tx.sender}}" target="_blank"><span class="noDetail" ng-bind="tx.sender"></span></a></td>
+				<td><a href="s_account.html?account={{tx.recipient}}" target="_blank"><span class="noDetail" ng-bind="tx.recipient"></span></a></td>
+			</tr>
+		</tdoby>
+	</table>
+	<div class="modal fade" id="txDetail" tabindex="-1" role="dialog">
+		<div class="modal-dialog" style="width:800px;">
+	    	<div class="modal-content">
+	        	<div class="modal-header">
+	            	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	            	<h5 class="modal-title"><b>交易详情</b></h5>
+		         </div>
+		         <div class="modal-body">
+		         	<table>
+		         		<tr ng-repeat="item in items" style="line-height:26px;">
+							<td><span ng-bind="item.label"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+							<td ng-bind="item.content"></td>
+						</tr>
+					</table>
+		         </div>
+			</div>
+		</div>
+	</div>
+</div>
+<footer class="footer navbar-fixed-bottom" ng-include="'inc_footer.html'"></footer>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/nemchina_explorer.js"></script>
+</body>
+</html>

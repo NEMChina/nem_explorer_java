@@ -1,0 +1,61 @@
+257 - Initiating a transfer transaction
+2049 - Initiating a importance transfer transaction
+4097 - Converting an account to a multisig account; 
+4098 - Cosigning multisig transaction;
+4100 - Initiating a multisig transaction; Adding and removing cosignatories;
+8193 - Provisioning a namespace
+16385 - Creating a mosaic definition
+16386 - Changing the mosaic supply
+
+transfer
+Block: 511219
+Hash: 8d8bf00b5bac4790a0e43b1ef4c64873670b97fb26308ef47bf76f0bb6a7748b
+Sender: nblk2a-i3jonr-zwva57-tc63w5-uq3jud-77mbxq-wqes
+Recipient: ndysac-jyvycl-pbqzr4-gvuaev-5dwf4b-3tisuc-2ckl
+Amount: 10.000000
+Fee: 10.000000
+Timestamp: 2016-03-21 19:44:40 Deadline: 2016-03-21 20:44:40
+Signature: ff4e10c50262ef6202ed89f811ab1aca0966658fda8dd99e8afdc1ba21502c1220a2a41d469f0a46e6f5d51da7c318400b31b2132dedd3fe8a5ba641a705520a
+Message: b9dd224ee1646d09641e17788682b25f90dcf57f728f397d8ebe46463a7546219458bbf5de7481d45b55dc823490f9d85aa94ab2efa409c4b25d58a38cb8dbce
+
+
+importance
+Block: 721247
+Hash: 50d5bc1ff2e1c483f4b9dd7c7d4624125c09ed028b3c32d5dc56a0b0ecb87b64
+Sender: nbg4rh-bkaenz-4kdqb5-7cozp7-z45gy3-wmy7nn-4zae
+Remote: narpyt-dltm7t-tlvij7-smqxqh-vavun6-bejiqw-imyc
+Fee: 10.000000
+Timestamp: 2016-08-15 19:40:52 Deadline: 2016-08-15 20:40:52
+Signature: 11779ab0676b71fdb01c52d0ebf810d7923bb8ddd6551b4d2e91f571c61dbfe1f774c417c337b01605d35fca1c7381c2eb8516fdfa99fd1fd6f7e737d082450a
+
+
+multisig
+Block: 722007
+Hash: 7d06d36f239a279c67e85c7b88f405fcd7781a24aa95a5355bc43563b986c646
+Sender: nctwkw-gd564g-iqqcz5-x5tc4y-m46vxw-lt3qwd-5nlz
+Total Fee: 32.000000 multisig wrapper fee: 6.000000
+Timestamp: 2016-08-16 08:29:39 Deadline: 2016-08-16 09:29:39
+Signature: 25bce0866d2a216b3277042ffdaf554e6b1569b3a7af79ace9fb5cdd5bc101525f92e1a7baccb919edac0b6c05846b69610bf2c6e1727624afc82c6bc0a90e0c
+Inner:
+Transfer transaction
+
+Block: 722007
+Hash: e45d648ccdfcc945d53bccd35bf927504bda33c40f627025da292f3b95446a14
+Sender: nagjg3-qfwyz3-7lmi7i-qpsgqn-yadgsj-zgjrd2-diya
+Recipient: ndyps7-pchtsy-lkpmoo-rzjgfx-obxxh7-axmf3p-r3xg
+Amount: 29982.000000
+Fee: 20.000000
+Timestamp: 2016-08-16 08:29:39 Deadline: 2016-08-16 09:29:39
+Cosignatures: 1
+  Cosignatory: nbem6s-fohu5p-origav-g3nnji-mcg73r-2tweei-daz5
+  Timestamp: 2016-08-16 08:30:55
+  Signature: 73f8c2eab2dd03c2d8df121d8f17a0e8371eadaebc30286af06dbb68cd8564cc89e2752d39a4dfac09f96de6e72701e931b3954fd0498f423202be70b9ce9d02
+
+Block: 532543
+Hash: 19a19a1206d5262671c5b15cf64eec24ac4d03ea214a855a0e10dd5f89e11278
+Sender: napost-ily5b2-raaxmw-ax4fcu-m525ek-uyjaeh-wiom
+Namespace: apostille
+Fee: 108.000000
+Rental fee: 50000.000000
+Timestamp: 2016-04-05 17:31:55 Deadline: 2016-04-05 18:31:55
+Signature: 7df19372297499e21580279a49490ef77d6cad169ee956f96170b9512224961a930d34348c8c38a05a3a8945086dd6d2c6c698e0eaaeb33b981617affd32ce02

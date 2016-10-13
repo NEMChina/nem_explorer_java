@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>NEM中文社区 - 区块浏览器</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/nemchina_explorer.css" rel="stylesheet">
+	<link rel="shortcut icon" href="images/icon.ico" type="image/x-icon">
+</head>
+<body ng-app="content">
+<div id="header" class="container">
+    <div id="navigation" class="row top-buffer-10" ng-controller="navCtrl">
+        <div class="col-xs-12">
+        	<div class="pull-left margin-right-20"><a href="blocklist.html"><img src="images/nem.png" width="99" height="33"></a></div>
+        	<div class="pull-right form-group bottom-buffer-10">
+		        <form class="form-inline" role="form">
+		        	<input id="searchInput" type="text" style="width:300px;" class="form-control" placeholder="区块编号 / 交易哈希值 / 帐户地址">
+		  	 		<button id="search" type="button" class="btn btn-default" ng-click="search()"><span class="glyphicon glyphicon-search small"></span></button>
+		    	</form>
+		    </div>
+          	<div class="pull-right btn-group margin-right-20">
+                <button class="btn btn-default navi" ng-click="go('blocklist.html')">区 块</button>
+	            <button class="btn btn-default navi" ng-click="go('txlist.html')">交 易</button>
+	            <button class="btn btn-default navi" ng-click="go('accountlist.html')">帐 户</button>
+	            <button class="btn btn-default navi" ng-click="go('nodelist.html')">节 点</button>
+	            <button class="btn btn-default navi active" ng-click="go('supernodepayout.html')">超级节点奖励</button>
+	            <button class="btn btn-default navi disabled">命名空间</button>
+	            <button class="btn btn-default navi disabled">投票</button>
+            </div>
+        </div>
+    </div>
+    <div id="warning" class="alert alert-warning hidden">
+	    <a href="#" class="close" onclick="$('#warning').hide();">&times;</a>
+	    <strong>提示：  </strong><span id="warningContent"></span>
+	</div>
+	<div class="alert alert-success margin-top-20">
+		为了构建健全和稳定的NEM网络环境，并为后续的NEM轻量级应用提供基础服务，NEM官方实行定期奖励超级节点的提供者，奖金发放周期为每天。<br/>
+		请前往&nbsp;&nbsp;<a href="https://forum.nem.io/t/nem-supernode-rewards-program/1735" target="_blank"><<关于超级节点奖励说明>></a>&nbsp;&nbsp;查阅详细资料。
+	</div>
+</div>
+<div id="content" class="container" ng-controller="payoutListCtrl" style="padding-bottom:70px;">
+	<div class="form-group pull-right" style="width:180px;">
+    	<select class="form-control" ng-model="select" ng-options="option.key for option in selectOptions" ng-change="changeSelectOption()"></select>
+  	</div>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>序号</th>
+				<th>发送时间</th>
+				<th>批次</th>
+				<th>发送方 / 接收方</th>
+				<th>数量</th>
+				<th>手续费</th>
+			</tr>
+		</thead>
+		<tbody class="well well-large">
+			<tr ng-repeat="payout in payoutList">
+				<td ng-bind="$index+1"></td>
+				<td ng-bind="payout.timeStamp"></td>
+				<td ng-bind="payout.round"></td>
+				<td ng-bind-html="payout.senderAndRecipient|to_trusted"></td>
+				<td ng-bind="payout.amount"></td>
+				<td ng-bind="payout.fee"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<footer class="footer navbar-fixed-bottom" ng-include="'inc_footer.html'"></footer>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/nemchina_explorer.js"></script>
+</body>
+</html>
