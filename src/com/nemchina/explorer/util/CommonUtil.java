@@ -2,6 +2,8 @@ package com.nemchina.explorer.util;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.sf.json.JSONObject;
 
 /** 
@@ -13,10 +15,20 @@ public class CommonUtil {
 
 	public static final long NEM_EPOCH = 1427587585; //UTC(2015, 2, 29, 0, 6, 25, 0);
 	
+	/**
+	 * Check String
+	 * @param object
+	 * @return
+	 */
 	public static String checkString(Object object){
 		return object==null?"":object.toString();
 	}
 	
+	/**
+	 * Check Integer
+	 * @param object
+	 * @return
+	 */
 	public static int checkInt(Object object){
 		if(object==null){
 			return 0;
@@ -28,6 +40,11 @@ public class CommonUtil {
 		}
 	}
 	
+	/**
+	 * Check Long
+	 * @param object
+	 * @return
+	 */
 	public static long checkLong(Object object){
 		if(object==null){
 			return 0;
@@ -58,6 +75,12 @@ public class CommonUtil {
         return result;
 	}
 	
+	/**
+	 * Get String from Json
+	 * @param object
+	 * @param key
+	 * @return
+	 */
 	public static String jsonString(JSONObject object, String key){
 		if(object.containsKey(key)){
 			return object.getString(key);
@@ -65,6 +88,12 @@ public class CommonUtil {
 		return "";
 	}
 	
+	/**
+	 * Get Integer from Json
+	 * @param object
+	 * @param key
+	 * @return
+	 */
 	public static int jsonInt(JSONObject object, String key){
 		if(object.containsKey(key)){
 			return object.getInt(key);
@@ -72,6 +101,12 @@ public class CommonUtil {
 		return 0;
 	}
 	
+	/**
+	 * Get Long from Json
+	 * @param object
+	 * @param key
+	 * @return
+	 */
 	public static long jsonLong(JSONObject object, String key){
 		if(object.containsKey(key)){
 			return object.getLong(key);
@@ -79,6 +114,12 @@ public class CommonUtil {
 		return 0;
 	}
 	
+	/**
+	 * Get Double from Json
+	 * @param object
+	 * @param key
+	 * @return
+	 */
 	public static double jsonDouble(JSONObject object, String key){
 		if(object.containsKey(key)){
 			return object.getDouble(key);
@@ -86,6 +127,12 @@ public class CommonUtil {
 		return 0;
 	}
 	
+	/**
+	 * Get String from Map
+	 * @param map
+	 * @param key
+	 * @return
+	 */
 	public static String mapString(Map<String, Object> map, String key){
 		if(map.get(key)!=null){
 			return map.get(key).toString();
@@ -93,6 +140,12 @@ public class CommonUtil {
 		return "";
 	}
 	
+	/**
+	 * Get Integer from Map
+	 * @param map
+	 * @param key
+	 * @return
+	 */
 	public static int mapInt(Map<String, Object> map, String key){
 		int result = 0;
 		if(map.get(key)!=null){
@@ -103,6 +156,12 @@ public class CommonUtil {
 		return result;
 	}
 	
+	/**
+	 * Get Long from Map
+	 * @param map
+	 * @param key
+	 * @return
+	 */
 	public static long mapLong(Map<String, Object> map, String key){
 		long result = 0;
 		if(map.get(key)!=null){
@@ -113,6 +172,11 @@ public class CommonUtil {
 		return result;
 	}
 	
+	/**
+	 * Convert String to Integer
+	 * @param str
+	 * @return
+	 */
 	public static int convertStrToInt(String str){
 		int result = 0;
 		if(str==null || str.trim().length()==0){
@@ -122,5 +186,20 @@ public class CommonUtil {
 			result = Integer.parseInt(str);
 		} catch (NumberFormatException numberEx) { }
 		return result;
+	}
+	
+	/**
+	 * Get page parameter from request
+	 * @param request
+	 * @param key
+	 * @return
+	 */
+	public static int getPageParamFromRequest(HttpServletRequest request, String key){
+		String pageString = request.getParameter(key);
+		int page = 1;
+		try {
+			page = Integer.parseInt(pageString);
+		} catch (NumberFormatException numberEx) { }
+		return page;
 	}
 }

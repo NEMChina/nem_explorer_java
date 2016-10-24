@@ -24,8 +24,8 @@
 	            <button class="btn btn-default navi" ng-click="go('accountlist.html')">帐 户</button>
 	            <button class="btn btn-default navi active" ng-click="go('nodelist.html')">节 点</button>
 	            <button class="btn btn-default navi" ng-click="go('supernodepayout.html')">超级节点奖励</button>
-	            <button class="btn btn-default navi disabled">命名空间</button>
-	            <button class="btn btn-default navi disabled">投票</button>
+	            <button class="btn btn-default navi" ng-click="go('namespacelist.html')">命名空间与资产</button>
+	            <!-- <button class="btn btn-default navi disabled">投票</button> -->
             </div>
         </div>
     </div>
@@ -70,7 +70,7 @@
 		</tbody>
 	</table>
 </div>
-<footer class="footer navbar-fixed-bottom" ng-include="'inc_footer.html'"></footer>
+<footer class="footer navbar-fixed-bottom" ng-include="'inc/inc_footer.html'"></footer>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/angular.min.js"></script>

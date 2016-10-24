@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 
 import com.nemchina.explorer.http.Account;
 import com.nemchina.explorer.http.Block;
+import com.nemchina.explorer.http.Namespace;
 import com.nemchina.explorer.http.SuperNode;
 import com.nemchina.explorer.http.Transaction;
 import com.nemchina.explorer.util.CommonUtil;
@@ -42,8 +43,8 @@ public class InitDataFromNIS extends HttpServlet {
 			}
 			//height from Database
 			heightDB = Block.chainHeightFromDatabase();
-			if(heightDB<=720000){
-				heightDB = 720000;
+			if(heightDB<=440000){
+				heightDB = 440000;
 			}
 			if(heightDB>=heightNIS){
 				return;
@@ -173,7 +174,6 @@ public class InitDataFromNIS extends HttpServlet {
 		boolean isEnd = false;
 		JSONArray blockArray = null;
 		int height = heightDB;
-		int count = 0;
 		while(!isEnd){
 			blockArray = Block.localChainBlocksAfter(height);
 			if(blockArray==null || blockArray.size()==0){
@@ -205,6 +205,7 @@ public class InitDataFromNIS extends HttpServlet {
 				JSONObject tx = null;
 				JSONObject txSub = null;
 				Object[] txParams = null;
+				Object[] namespaceParams = null;
 				for(int j=0;j<txArray.size();j++){
 					tx = txArray.getJSONObject(j);
 					if(tx==null){
@@ -261,6 +262,28 @@ public class InitDataFromNIS extends HttpServlet {
 						txParams[10] = 0;
 					}
 					Transaction.createTransaction(txParams);
+					//create namespace
+					if(txSub.containsKey("type") && txSub.getInt("type")==8193){
+						namespaceParams = new Object[6];
+						namespaceParams[0] = Namespace.queryMaxNamespaceNO()+1;
+						if(txSub.get("parent")==null || "null".equals(txSub.getString("parent"))){
+							namespaceParams[1] = txSub.get("newPart");
+						} else {
+							namespaceParams[1] = txSub.getString("parent") + "." + txSub.get("newPart");
+						}
+						namespaceParams[2] = 0;
+						namespaceParams[3] = txParams[7];
+						namespaceParams[4] = txParams[2];
+						namespaceParams[5] = txParams[3];
+						Namespace.createNamespace(namespaceParams);
+					}
+					//update mosaics amount in specific namespace
+					if(txSub.containsKey("type") && txSub.getInt("type")==16385){
+						if(txSub.containsKey("mosaicDefinition") && txSub.getJSONObject("mosaicDefinition").containsKey("id")){
+							String namespace = txSub.getJSONObject("mosaicDefinition").getJSONObject("id").getString("namespaceId");
+							Namespace.updateNamespaceMosaicsAmount(namespace);
+						}
+					}
 					//create supernode payout
 					String payoutMessage = "";
 					if(txParams[3].equals(SuperNode.superNodePayOutAccount) && txSub.containsKey("message")){
@@ -298,7 +321,6 @@ public class InitDataFromNIS extends HttpServlet {
 						this.createOrUpdateAccount(null, txSub.getString("otherAccount"), loadedAccountSet);
 					}
 				}
-				count++;
 			}
 			height += 10;
 		}

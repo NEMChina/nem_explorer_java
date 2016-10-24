@@ -32,11 +32,7 @@ public class TXListServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//paging
-		String pageString = request.getParameter("page");
-		int page = 1;
-		try {
-			page = Integer.parseInt(pageString);
-		} catch (NumberFormatException numberEx) { }
+		int page = CommonUtil.getPageParamFromRequest(request, "page");
 		JSONArray outputTransactionListJson = new JSONArray();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");

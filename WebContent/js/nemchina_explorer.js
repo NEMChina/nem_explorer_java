@@ -283,6 +283,43 @@ app.controller('accountListCtrl', function($scope, $http) {
 	$scope.changeSelectOption();
 });
 
+//load namespace list
+app.controller('namespaceListCtrl', function($scope, $http) {
+	$scope.page = 1;
+	$scope.hideMore = false;
+	$scope.showMosaicList = function(mosaicList, mosaicAmount, $event){
+		//just skip the action when click from <a>
+		if($event!=null && $event.target!=null && $event.target.className.indexOf("noDetail")!=-1){
+			return;
+		}
+		if(mosaicAmount!=""){
+			var itemArr = [];
+			var item = {};
+			for(i in mosaicList){
+				if(mosaicList[i]!=null){
+					item = {};
+					item.no = mosaicList[i].no;
+					item.name = mosaicList[i].name;
+					item.initialSupply = mosaicList[i].initialSupply;
+					if(mosaicList[i].transferable=="true"){
+						item.transferable = "可以";
+					} else {
+						item.transferable = "不可以";
+					}
+					itemArr.push(item);
+				}
+			}
+			$scope.mosaicList = itemArr;
+			$("#mosaicListModule").modal("show");
+		}
+	};
+	$scope.loadMore = function(){
+		$scope.page++;
+		getNamespaceList($scope, $http);
+	};
+	getNamespaceList($scope, $http);
+});
+
 //query account list
 function getAccountList($scope, $http){
 	$http.get(HOST+"/accountList").success(function(response) {
@@ -406,6 +443,43 @@ app.controller('payoutListCtrl', function($scope, $http) {
 		$scope.changeSelectOption();
 	});
 });
+
+//query namespace list
+function getNamespaceList($scope, $http){
+	$scope.loadingMore = true;
+	$http.get(HOST+"/namespaceList?page="+$scope.page).success(function(response) {
+		if(response==null)
+			return;
+		var list = new Array();
+		var item = {};
+		for(x in response){
+			if(response[x]==null)
+				continue;
+			item = {};
+			item.no = response[x].no;
+			item.name = response[x].name;
+			item.creator = response[x].creator;
+			item.timeStamp = new Date(response[x].timeStamp*1000 + NEM_EPOCH).format("yyyy-MM-dd hh:mm:ss");
+			if(response[x].mosaicAmount==0){
+				item.mosaicAmount = "";
+			} else {
+				item.mosaicAmount = response[x].mosaicAmount;
+				item.class = "cursorPointer";
+			}
+			item.mosaicList = response[x].mosaicList;
+			list.push(item);
+		}
+		if($scope.namespaceList){
+			$scope.namespaceList = $scope.namespaceList.concat(list);
+		} else {
+			$scope.namespaceList = list;
+		}
+		if(list.length==0 || list.length<100){
+			$scope.hideMore = true;
+		}
+		$scope.loadingMore = false;
+	});
+}
 
 //search block
 app.controller('searchBlockCtrl', function($scope, $http, $location) {
