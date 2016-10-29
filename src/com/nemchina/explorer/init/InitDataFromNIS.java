@@ -43,38 +43,32 @@ public class InitDataFromNIS extends HttpServlet {
 			}
 			//height from Database
 			heightDB = Block.chainHeightFromDatabase();
-			if(heightDB<=440000){
-				heightDB = 440000;
-			}
-			if(heightDB>=heightNIS){
-				return;
-			}
-			new Thread(){
-				public void run() {
-					System.out.println("Init data start");
-					System.out.println("height(NIS): " + heightNIS + "  height(database): " + heightDB);
-					if(heightDB==0){
-						loadNemesisBlock();
-						loadBlocks(heightNIS, 1);
-					} else {
-						loadBlocks(heightNIS, heightDB);
+			System.out.println("Init data start");
+			System.out.println("height(NIS): " + heightNIS + "  height(database): " + heightDB);
+			if(heightDB < heightNIS){
+				new Thread(){
+					public void run() {
+						if(heightDB==0){
+							loadNemesisBlock();
+							lastLoadedHeight = loadBlocks(1);
+						} else {
+							lastLoadedHeight = loadBlocks(heightDB);
+						}
+						initEnd = true;
 					}
-					initEnd = true;
-					lastLoadedHeight = heightNIS;
-					System.out.println("Int data end");
-					System.out.println("Fetch data by schedule start");
-				}
-			}.start();
+				}.start();
+			} else {
+				initEnd = true;
+			}
+			System.out.println("Int data end");
+			System.out.println("Fetch data by schedule start");
 			//schedule fetch data from NIS
 			ScheduledExecutorService pool = Executors.newScheduledThreadPool(1);
 			pool.scheduleWithFixedDelay(new Runnable(){
 				public void run() {
 					if(initEnd){
-						heightNIS = Block.chainHeight();
-						if(heightNIS > lastLoadedHeight){
-							loadBlocks(heightNIS, lastLoadedHeight);
-							lastLoadedHeight = heightNIS;
-							System.out.println("Fetch data by schedule block["+heightNIS+" - "+(lastLoadedHeight+1)+"]");
+						if(Block.chainHeight() > lastLoadedHeight){
+							lastLoadedHeight = loadBlocks(lastLoadedHeight);
 						}
 					}
 				};
@@ -168,16 +162,19 @@ public class InitDataFromNIS extends HttpServlet {
 	
 	/**
 	 * Init Blocks
+	 * @param blockHeight
+	 * @return
 	 */
-	public void loadBlocks(int heightNIS, int heightDB){
+	public int loadBlocks(int blockHeight){
 		Set<String> loadedAccountSet = new HashSet<String>();
 		boolean isEnd = false;
 		JSONArray blockArray = null;
-		int height = heightDB;
+		int height = blockHeight;
+		int lastLoadedBLock = blockHeight;
 		while(!isEnd){
 			blockArray = Block.localChainBlocksAfter(height);
 			if(blockArray==null || blockArray.size()==0){
-				continue;
+				return lastLoadedBLock;
 			}
 			JSONObject block = null;
 			JSONObject blockSub = null;
@@ -191,10 +188,6 @@ public class InitDataFromNIS extends HttpServlet {
 				blockSub = block.getJSONObject("block");
 				if(blockSub==null){
 					continue;
-				}
-				if(blockSub.getInt("height")>=heightNIS){
-					isEnd = true;
-					break;
 				}
 				JSONArray txArray = block.getJSONArray("txes");
 				//create or update account (block creator)
@@ -321,9 +314,12 @@ public class InitDataFromNIS extends HttpServlet {
 						this.createOrUpdateAccount(null, txSub.getString("otherAccount"), loadedAccountSet);
 					}
 				}
+				lastLoadedBLock = blockSub.getInt("height");
+				System.out.println("Loaded block[" + lastLoadedBLock + "]");
 			}
 			height += 10;
 		}
+		return lastLoadedBLock;
 	}
 	
 	/**

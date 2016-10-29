@@ -1,6 +1,6 @@
 //nemesis block timeStamp
 var NEM_EPOCH = Date.UTC(2015, 2, 29, 0, 6, 25, 0);
-var HOST = "http://127.0.0.1:8080/explorer";
+var HOST = "/explorer";
 //query block list
 function getBlockList($scope, $http){
 	$http.get(HOST+"/blockList?page="+$scope.page).success(function(response) {
@@ -192,7 +192,7 @@ app.controller('blockListCtrl', function($scope, $http) {
 	//load transactions in block
 	$scope.showBlockTransactions = function(txes, $event){
 		//just skip the action when click from <a>
-		if($event!=null && $event.target!=null && $event.target.localName=="a"){
+		if($event!=null && $event.target!=null && $event.target.className.indexOf("noDetail")!=-1){
 			return;
 		}
 		var txArr = [];
@@ -561,6 +561,7 @@ app.controller('searchTransactionCtrl', function($scope, $http, $location) {
 
 //search account
 app.controller('searchAccountCtrl', function($scope, $http, $location) {
+	$scope.hideMore = false;
 	var absUrl = $location.absUrl();
 	if(absUrl==null){
 		return;
@@ -568,9 +569,9 @@ app.controller('searchAccountCtrl', function($scope, $http, $location) {
 	var reg = /account=(\w{40}|\w{46})/;
 	if(absUrl.match(reg).length==2){
 		var account = absUrl.match(reg)[1];
+		$scope.searchAccount = account;
 		$http.get(HOST+"/accountDetail?account="+account).success(function(response) {
 			if(response==null || response.account==null){
-				alert(11);
 				$scope.accountItems = [{label: "查找不到指定的帐户信息", content: ""}];
 				return;
 			}
@@ -589,10 +590,10 @@ app.controller('searchAccountCtrl', function($scope, $http, $location) {
 				list.push({label: "远程收获", content: "未开启"});
 			}
 			if(response.blocks!=null){
-				list.push({label: "收获区块数", content: response.blocks});
+				list.push({label: "收获区块数", content: "" + response.blocks});
 			}
 			if(response.blocks!=null){
-				list.push({label: "收获手续费", content: response.fees});
+				list.push({label: "收获手续费", content: "" + response.fees});
 			}
 			if(response.cosignatories!=null && response.cosignatories!=""){
 				list.push({label: "多重签名帐户", content: "是"});
@@ -620,8 +621,12 @@ app.controller('searchAccountCtrl', function($scope, $http, $location) {
 					tx.recipient = response.txes[i].recipient;
 					tx.height = response.txes[i].height;
 					tx.signature = response.txes[i].signature;
+					$scope.lastID = response.txes[i].id;
 					txList.push(tx);
 				}
+			}
+			if(response.txes.length<25){
+				$scope.hideMore = true;
 			}
 			$scope.txList = txList;
 		});
@@ -629,11 +634,51 @@ app.controller('searchAccountCtrl', function($scope, $http, $location) {
 	//load transaction detail
 	$scope.showTransaction = function(height, signature, hash, $event){
 		//just skip the action when click from <a>
-		if($event!=null && $event.target!=null && $event.target.localName=="a"){
+		if($event!=null && $event.target!=null && $event.target.className.indexOf("noDetail")!=-1){
 			return;
 		}
 		$("#txDetail").modal("show");
 		getTXDetail($scope, $http, height, signature, hash, false);
+	};
+	//load more transaction
+	$scope.loadMore = function(){
+		$scope.loadingMore = true;
+		$http.get(HOST+"/accountDetailTXList?account="+$scope.searchAccount+"&lastID="+$scope.lastID).success(function(response) {
+			//load tx list
+			if(response==null){
+				return;
+			}
+			var txList = [];
+			var tx = {};
+			for(i in response){
+				if(response[i]!=null){
+					tx = {};
+					tx.hash = response[i].hash;
+					if(response[i].timeStamp!=null){
+						tx.time = new Date(response[i].timeStamp*1000 + NEM_EPOCH).format("yyyy-MM-dd hh:mm:ss");
+					} else {
+						tx.time = "";
+					}
+					tx.amount = response[i].amount;
+					tx.fee = response[i].fee;
+					tx.sender = response[i].sender;
+					tx.recipient = response[i].recipient;
+					tx.height = response[i].height;
+					tx.signature = response[i].signature;
+					$scope.lastID = response[i].id;
+					txList.push(tx);
+				}
+			}
+			if($scope.txList){
+				$scope.txList = $scope.txList.concat(txList);
+			} else {
+				$scope.txList = txList;
+			}
+			if(txList.length==0 || txList.length<25){
+				$scope.hideMore = true;
+			}
+			$scope.loadingMore = false;
+		});
 	};
 });
 

@@ -47,7 +47,7 @@
 		</thead>
 		<tbody class="well well-large">
 			<tr ng-repeat="block in blockList" style="cursor:pointer;" ng-click="showBlockTransactions(block.txes, $event)" data-toggle="popover" title="如区块包含交易信息，点击可查阅">
-				<td><a href="s_block.html?height={{block.height}}" target="_blank"><span ng-bind="block.height"></span></a></td>
+				<td><a href="s_block.html?height={{block.height}}" target="_blank"><span class="noDetail" ng-bind="block.height"></span></a></td>
 				<td ng-bind="block.timeStamp"></td>
 				<td ng-bind="block.txAmount"></td>
 				<td ng-bind="block.txFee"></td>

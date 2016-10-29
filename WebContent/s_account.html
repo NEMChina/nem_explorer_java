@@ -62,8 +62,9 @@
 				<td><a href="s_account.html?account={{tx.sender}}" target="_blank"><span class="noDetail" ng-bind="tx.sender"></span></a></td>
 				<td><a href="s_account.html?account={{tx.recipient}}" target="_blank"><span class="noDetail" ng-bind="tx.recipient"></span></a></td>
 			</tr>
-		</tdoby>
+		</tboby>
 	</table>
+	<button type="button" class="btn btn-default btn-sm btn-block" ng-class="{hidden:hideMore, disabled:loadingMore}" ng-click="loadMore()">加载更多</button>
 	<div class="modal fade" id="txDetail" tabindex="-1" role="dialog">
 		<div class="modal-dialog" style="width:800px;">
 	    	<div class="modal-content">

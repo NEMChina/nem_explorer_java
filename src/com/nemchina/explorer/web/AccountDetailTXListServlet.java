@@ -3,7 +3,6 @@ package com.nemchina.explorer.web;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,71 +17,33 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /** 
- * @Description: Load Account Detail Servlet
+ * @Description: Load Account Detail TX List Servlet
  * @author lu
- * @date 2016年8月21日
+ * @date 2016年10月24日
  */ 
-@WebServlet("/accountDetail")
-public class AccountDetailServlet extends HttpServlet {
+@WebServlet("/accountDetailTXList")
+public class AccountDetailTXListServlet extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String account = CommonUtil.checkString(request.getParameter("account"));
-		JSONObject outputAccountJson = new JSONObject();
+		String lastID = CommonUtil.checkString(request.getParameter("lastID"));
+		JSONArray outputTXListJson = new JSONArray();
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
 		try{
 			if("".equals(account)){
-				out.print(outputAccountJson);
+				out.print(outputTXListJson);
 				return;
 			}
 			account = account.replaceAll("-", "");
-			JSONObject accountJSON = Account.accountGet(account);
-			if(accountJSON==null || !accountJSON.containsKey("account") || !accountJSON.containsKey("meta")){
-				out.print(outputAccountJson);
-				return;
-			}
-			//query account info
-			JSONObject meta = accountJSON.getJSONObject("meta");
-			JSONObject accountSub = accountJSON.getJSONObject("account");
-			DecimalFormat poiFormat = new DecimalFormat("0.#####%");
-			DecimalFormat decimalFormat = new DecimalFormat("0.##");
-			outputAccountJson.put("account", CommonUtil.jsonString(accountSub, "address"));
-			outputAccountJson.put("publicKey", CommonUtil.jsonString(accountSub, "publicKey"));
-			outputAccountJson.put("balance", decimalFormat.format(CommonUtil.jsonLong(accountSub, "balance")/1000000));
-			outputAccountJson.put("importance", poiFormat.format(CommonUtil.jsonDouble(accountSub, "importance")));
-			Map<String, Object> accountMap = Account.queryAccountByAddress(account);
-			if(accountMap!=null){
-				outputAccountJson.put("timeStamp", CommonUtil.mapLong(accountMap, "c_timestamp"));
-				outputAccountJson.put("blocks", CommonUtil.mapInt(accountMap, "c_blocks"));
-				outputAccountJson.put("fees", decimalFormat.format(CommonUtil.mapLong(accountMap, "c_fees")/1000000));
-			}
-			String label = CommonUtil.jsonString(accountSub, "label");
-			if("null".equals(label)){
-				label = "";
-			}
-			outputAccountJson.put("label", label);
-			outputAccountJson.put("remoteStatus", CommonUtil.jsonString(meta, "remoteStatus"));
-			if(meta.containsKey("cosignatories") && meta.getJSONArray("cosignatories").size()>0){
-				outputAccountJson.put("multisig", 1);
-				StringBuffer cosignatories = new StringBuffer();
-				for(int i=0;i<meta.getJSONArray("cosignatories").size();i++){
-					JSONObject cosignatory = meta.getJSONArray("cosignatories").getJSONObject(i);
-					if("".equals(cosignatories.toString())){
-						cosignatories.append(CommonUtil.jsonString(cosignatory, "address"));
-					} else {
-						cosignatories.append("<br/>").append(CommonUtil.jsonString(cosignatory, "address"));
-					}
-				}
-				outputAccountJson.put("cosignatories", cosignatories.toString());
-			}
 			//query transactions of this account
-			JSONObject accountTransfersAll = Account.accountTransfersAll(account);
+			DecimalFormat decimalFormat = new DecimalFormat("0.##");
+			JSONObject accountTransfersAll = Account.accountTransfersAll(account, lastID);
 			JSONArray accountTransactions = new JSONArray();
 			JSONObject outAccountTx = null;
-			JSONArray outAccountArray = new JSONArray();
 			if(accountTransfersAll!=null && accountTransfersAll.containsKey("data")){
 				accountTransactions = accountTransfersAll.getJSONArray("data");
 				for(int i=0;i<accountTransactions.size();i++){
@@ -103,14 +64,13 @@ public class AccountDetailServlet extends HttpServlet {
 					if(transactionMeta.containsKey("hash") || transactionMeta.getJSONObject("hash").containsKey("data")){
 						outAccountTx.put("hash", CommonUtil.jsonString(transactionMeta.getJSONObject("hash"), "data"));
 					}
-					outAccountArray.add(outAccountTx);
+					outputTXListJson.add(outAccountTx);
 				}
-				outputAccountJson.put("txes", outAccountArray);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		out.print(outputAccountJson);
+		out.print(outputTXListJson);
 		return;
 	}
 
