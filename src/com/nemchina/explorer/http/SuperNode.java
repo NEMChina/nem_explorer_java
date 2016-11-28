@@ -19,7 +19,7 @@ import net.sf.json.JSONObject;
  */ 
 public class SuperNode {
 
-	public static String superNodeURL = "http://supernodes.nem.io";
+	public static String superNodeURL = "https://supernodes.nem.io";
 	public static JSONArray superNodes = null;
 	public static Map<String, String> superNodeHostMap = null;
 	public static Map<String, String> superNodeNameMap = null;
@@ -49,7 +49,7 @@ public class SuperNode {
 	public static void fetchSuperNodes(){
 		try{
 			//fetch supernode info from URL
-			String content = HttpUtil.httpGetByFullURL(superNodeURL);
+			String content = UrlUtil.getContent(superNodeURL);
 			//match the supernode properties item
 			content = content.replaceAll("\r\n", "");
 			content = content.replaceAll(">(\\s)+<", "><");
